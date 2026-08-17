@@ -420,6 +420,8 @@ namespace Fortress3PaewangServerTest
             int turnCount = (int)BitStream.ReadBits(payloadBytes, 42, 11);
             int delay = (int)BitStream.ReadBits(payloadBytes, 53, 11);
 
+            Console.WriteLine($"slotIndex: {slotIndex}, unknown: {unknown}, turnCount: {turnCount}, delay: {delay}");
+
             RoomManager.ProcessTurnEnd(session, unknown, turnCount, delay);
         }
 

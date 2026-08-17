@@ -35,6 +35,9 @@ namespace Fortress3PaewangServerTest
         // 게임의 첫 번째 라운드(팀 교대 턴)인지 확인하는 플래그
         public bool IsFirstRound { get; private set; }
 
+        // 나중에 IsFirstRound같은 변수를 삭제 후 아래의 리스트를 새로 갱신하는 걸로 변경하기
+        public List<int> RoundTurnOrder { get; private set; } = new List<int>();
+
         public int State
         {
             get
@@ -348,11 +351,16 @@ namespace Fortress3PaewangServerTest
             IsFirstRound = true; // 첫 라운드 시작
             IsFirstSyncDone = false; // 첫 동기화 대기
 
-            // 0번 하드코딩 방지: 로딩 시작 시점에 가장 앞번호 유저를 첫 턴으로 미리 지정
-            var firstPlayer = _slots.OrderBy(s => s.Index).FirstOrDefault();
-            if (firstPlayer != null)
+            // 게임에 참여하는(살아있는) 슬롯 인덱스만 뽑아서 턴 순서를 만듦
+            // 일단은 간단히 슬롯 번호(Index) 오름차순으로 턴을 배정
+            RoundTurnOrder = _slots
+                .OrderBy(s => s.Index)
+                .Select(s => s.Index)
+                .ToList();
+
+            if (RoundTurnOrder.Count > 0)
             {
-                CurrentTurnSlotIndex = firstPlayer.Index;
+                CurrentTurnSlotIndex = RoundTurnOrder[0];
             }
 
             return true;

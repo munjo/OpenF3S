@@ -49,6 +49,8 @@ namespace Fortress3PaewangServerTest
     {
         static void Main(string[] args)
         {
+            Console.CancelKeyPress += new ConsoleCancelEventHandler(CancelHandler);
+
             // 데이터베이스 초기화
             DatabaseManager.InitializeDatabase();
 
@@ -75,8 +77,17 @@ namespace Fortress3PaewangServerTest
             GameServer gameServer1 = new GameServer(5001);
             Task.Run(() => gameServer1.StartAsync());
 
-            Console.WriteLine("\n[System] 모든 서버가 가동되었습니다. 종료하려면 Enter를 누르세요.\n");
-            Console.ReadLine(); // 메인 스레드가 종료되지 않도록 대기
+            Console.WriteLine("\n[System] 모든 서버가 가동되었습니다.\n");
+
+            // [변경 핵심] 엔터키나 Ctrl+C의 강제 해제에 영향을 받지 않는 반영구 대기 방식입니다.
+            // 스레드를 완전히 정지시켜 CPU 점유율을 먹지 않으면서도 프로그램을 유지합니다.
+            Thread.Sleep(Timeout.Infinite);
+        }
+
+        protected static void CancelHandler(object sender, ConsoleCancelEventArgs e)
+        {
+            // 이 값을 true로 바꾸면 OS의 종료 신호를 무시합니다.
+            e.Cancel = true;
         }
 
         public static int GetExpectedPacketSize(int packetSizeGroup)

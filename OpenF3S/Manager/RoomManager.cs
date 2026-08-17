@@ -649,8 +649,12 @@ namespace Fortress3PaewangServerTest
                         CommandId = 71,
                         PacketData = new byte[5]
                     };
-                    p71.WriteBits(5, room.CurrentTurnSlotIndex);
-                    p71.WriteBits(5, 1);
+
+                    // 살아있는 유저(RoundTurnOrder)의 개수만큼 5비트씩 슬롯 인덱스를 이어붙임
+                    for (int i = 0; i < room.RoundTurnOrder.Count; i++)
+                    {
+                        p71.WriteBits(5, room.RoundTurnOrder[i]);
+                    }
 
                     sessions = room.GetSessions();
                 }
